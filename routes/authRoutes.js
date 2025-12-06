@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/user');
 const { protectAdmin } = require('../middleware/authMiddleware');
 
 // Generate JWT with 1 hour expiration for auto-logout after inactivity
