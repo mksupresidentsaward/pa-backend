@@ -29,9 +29,12 @@ router.post(
 
       const application = await newApplication.save();
 
-      // Send emails
-      await emailService.sendApplicationConfirmation(application.email, application.fullName);
-      await emailService.sendAdminApplicationNotification(application);
+      // Send emails (Fire and Forget)
+      emailService.sendApplicationConfirmation(application.email, application.fullName)
+        .catch(err => console.error('Error sending confirmation email:', err));
+
+      emailService.sendAdminApplicationNotification(application)
+        .catch(err => console.error('Error sending admin notification email:', err));
 
       // Emit to admin dashboard
       const io = req.app.get('io');
@@ -95,7 +98,7 @@ router.put(
 
       // Send status update email to applicant
       await emailService.sendApplicationStatusUpdate(application.email, application.fullName, application.status);
-      
+
       // Emit to admin dashboard
       const io = req.app.get('io');
       io.to('adminRoom').emit('updateApplication', application);

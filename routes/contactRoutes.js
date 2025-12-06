@@ -29,10 +29,13 @@ router.post(
 
       const contact = await newContact.save();
 
-      // Send emails
-      await emailService.sendContactConfirmation(contact.email, contact.name);
-      await emailService.sendAdminContactNotification(contact);
-      
+      // Send emails (Fire and Forget)
+      emailService.sendContactConfirmation(contact.email, contact.name)
+        .catch(err => console.error('Error sending contact confirmation:', err));
+
+      emailService.sendAdminContactNotification(contact)
+        .catch(err => console.error('Error sending admin contact notification:', err));
+
       // Emit to admin dashboard
       const io = req.app.get('io');
       io.to('adminRoom').emit('newContactMessage', contact);
